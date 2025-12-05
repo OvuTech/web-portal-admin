@@ -18,8 +18,10 @@ export default function PartnersPage() {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [skip, setSkip] = useState(0);
-  const [limit] = useState(10);
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(50);
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
 
   // Form state for approve dialog
   const [rateLimitPerMinute, setRateLimitPerMinute] = useState(100);
@@ -34,13 +36,30 @@ export default function PartnersPage() {
 
   useEffect(() => {
     loadPartners();
-  }, [skip]);
+  }, [page, statusFilter]);
 
   const loadPartners = async () => {
     try {
       setIsLoading(true);
-      const data = await adminService.getPendingPartners({ skip, limit });
-      setPartners(data);
+      
+      // Map filter to backend status filter
+      const statusMap: Record<string, string | undefined> = {
+        'all': undefined,
+        'pending': 'pending_approval',
+        'active': 'active',
+        'suspended': 'suspended',
+        'rejected': 'rejected',
+      };
+      
+      const data = await adminService.getAllPartners({
+        page,
+        page_size: pageSize,
+        status_filter: statusMap[statusFilter],
+      });
+      
+      setPartners(data.partners || []);
+      setTotal(data.total || 0);
+      setTotalPages(data.total_pages || 1);
     } catch (error: any) {
       toast.error('Failed to load partners');
       console.error(error);
@@ -49,17 +68,9 @@ export default function PartnersPage() {
     }
   };
 
-  // Filter and search partners
+  // Filter and search partners (client-side search on loaded data)
   const filteredPartners = useMemo(() => {
     let filtered = partners;
-
-    // Filter by status
-    if (statusFilter !== 'all') {
-      filtered = filtered.filter((p) => {
-        if (statusFilter === 'pending') return p.status === 'pending_approval';
-        return p.status === statusFilter;
-      });
-    }
 
     // Search filter
     if (searchQuery) {
@@ -73,7 +84,7 @@ export default function PartnersPage() {
     }
 
     return filtered;
-  }, [partners, statusFilter, searchQuery]);
+  }, [partners, searchQuery]);
 
   const handleApprove = async () => {
     if (!selectedPartner) return;
@@ -336,21 +347,21 @@ export default function PartnersPage() {
       </div>
 
       {/* Pagination */}
-      {partners.length >= limit && (
+      {totalPages > 1 && (
         <div className="flex items-center justify-between">
           <button
-            onClick={() => setSkip(Math.max(0, skip - limit))}
-            disabled={skip === 0}
+            onClick={() => setPage(Math.max(1, page - 1))}
+            disabled={page === 1}
             className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Previous
           </button>
           <span className="text-sm text-gray-600">
-            Showing {skip + 1} to {Math.min(skip + limit, partners.length)} of {partners.length}
+            Page {page} of {totalPages} • Showing {filteredPartners.length} of {total} partners
           </span>
           <button
-            onClick={() => setSkip(skip + limit)}
-            disabled={skip + limit >= partners.length}
+            onClick={() => setPage(Math.min(totalPages, page + 1))}
+            disabled={page >= totalPages}
             className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Next

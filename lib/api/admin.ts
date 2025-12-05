@@ -43,8 +43,36 @@ export interface Transaction {
   created_at: string;
 }
 
+export interface WaitlistMember {
+  id: string;
+  name: string;
+  email: string;
+  created_at: string;
+}
+
+export interface WaitlistResponse {
+  waitlist: WaitlistMember[];
+  total: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
+}
+
+export interface PartnersResponse {
+  partners: Partner[];
+  total: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
+}
+
 export const adminService = {
   // Partners
+  getAllPartners: async (params?: { page?: number; page_size?: number; status_filter?: string }): Promise<PartnersResponse> => {
+    const response = await apiClient.get('/admin/partners', { params });
+    return response.data;
+  },
+
   getPendingPartners: async (params?: { skip?: number; limit?: number }): Promise<Partner[]> => {
     const response = await apiClient.get('/admin/partners/pending', { params });
     return response.data;
@@ -83,6 +111,12 @@ export const adminService = {
   // Transactions
   getTransactions: async (params?: any): Promise<Transaction[]> => {
     const response = await apiClient.get('/admin/transactions', { params });
+    return response.data;
+  },
+
+  // Waitlist
+  getWaitlist: async (params?: { page?: number; page_size?: number }): Promise<WaitlistResponse> => {
+    const response = await apiClient.get('/admin/waitlist', { params });
     return response.data;
   },
 };

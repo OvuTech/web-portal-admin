@@ -15,6 +15,7 @@ import {
   X,
   LogOut,
   User,
+  List,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
@@ -29,6 +30,7 @@ const navigationItems = [
   { name: 'Users', href: '/dashboard/users', icon: Users },
   { name: 'Bookings', href: '/dashboard/bookings', icon: Ticket },
   { name: 'Transactions', href: '/dashboard/transactions', icon: CreditCard },
+  { name: 'Waitlist', href: '/dashboard/waitlist', icon: List },
   { name: 'Analytics', href: '/dashboard/analytics', icon: BarChart3 },
 ];
 
@@ -52,6 +54,10 @@ const pageTitles: Record<string, { title: string; description: string }> = {
   '/dashboard/transactions': {
     title: 'Transactions',
     description: 'Monitor all payment transactions and refunds',
+  },
+  '/dashboard/waitlist': {
+    title: 'Waitlist',
+    description: 'View and manage waitlist members',
   },
   '/dashboard/analytics': {
     title: 'Analytics',
