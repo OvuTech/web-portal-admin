@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# OVU Admin Portal
+
+Internal admin portal for OVU staff to manage users, partners, bookings, transactions, and analytics.
+
+## Features
+
+- **Dashboard**: Overview of platform statistics and quick actions
+- **Partners Management**: Approve, suspend, and activate partner accounts
+- **Users Management**: View and manage all user accounts
+- **Bookings Management**: Monitor all bookings across the platform
+- **Transactions Management**: Track all payment transactions
+- **Analytics**: View platform analytics and insights
+
+## Tech Stack
+
+- Next.js 16 (App Router)
+- TypeScript
+- Tailwind CSS
+- Radix UI
+- Recharts
+- Axios
+- React Query
 
 ## Getting Started
 
-First, run the development server:
-
+1. Install dependencies:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Set up environment variables:
+```bash
+# Create .env.local
+API_URL=https://ovu-transport-staging.fly.dev
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Run the development server:
+```bash
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Open [http://localhost:3000](http://localhost:3000)
 
-## Learn More
+## API Endpoints
 
-To learn more about Next.js, take a look at the following resources:
+The admin portal uses the following API endpoints:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `/api/v1/auth/login` - Admin login
+- `/api/v1/auth/me` - Get current admin
+- `/api/v1/admin/partners/pending` - List pending partners
+- `/api/v1/admin/partners/{id}/approve` - Approve partner
+- `/api/v1/admin/partners/{id}/suspend` - Suspend partner
+- `/api/v1/admin/partners/{id}/activate` - Activate partner
+- `/api/v1/bookings` - Get all bookings
+- `/api/v1/payments` - Get all transactions
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project Structure
 
-## Deploy on Vercel
+```
+ovu-admin-portal/
+├── app/
+│   ├── api/              # API proxy routes
+│   ├── dashboard/        # Dashboard pages
+│   ├── login/            # Login page
+│   └── layout.tsx        # Root layout
+├── components/
+│   └── layouts/          # Dashboard layout
+├── contexts/             # React contexts
+├── lib/
+│   └── api/             # API service functions
+└── providers/            # React providers
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Environment Variables
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `API_URL` - Backend API URL (default: https://ovu-transport-staging.fly.dev)
